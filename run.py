@@ -21,6 +21,7 @@ from pytorch_lightning.callbacks import (
     TQDMProgressBar,
 )
 from pytorch_lightning.plugins import DDPPlugin
+from pytorch_lightning.strategies import DDPStrategy
 
 from utils.select_option import select_callback, select_dataset, select_model
 
@@ -133,7 +134,9 @@ def run(
     callbacks += [model_checkpoint, tqdm_progrss]
     callbacks += select_callback(model_name)
 
-    ddp_plugin = DDPPlugin(find_unused_parameters=False) if num_devices > 1 else None
+    # ddp_plugin = DDPPlugin(find_unused_parameters=False) if num_devices > 1 else None
+    ddp_plugin = DDPStrategy() if num_devices > 1 else None
+    # ddp_plugin = None if num_devices > 1 else None
 
     trainer = Trainer(
         logger=logger if run_train else None,
@@ -165,6 +168,7 @@ def run(
     model = select_model(model_name=model_name)
     model.logdir = logdir
     if run_train:
+        print("run train")
         best_ckpt = os.path.join(logdir, "best.ckpt")
         if os.path.exists(best_ckpt):
             os.remove(best_ckpt)
@@ -175,6 +179,7 @@ def run(
         trainer.fit(model, data_module, ckpt_path=ckpt_path)
 
     if run_eval:
+        print("run eval")
         ckpt_path = (
             f"{logdir}/best.ckpt"
             if model_name != "mipnerf360"
@@ -183,6 +188,7 @@ def run(
         trainer.test(model, data_module, ckpt_path=ckpt_path)
 
     if run_render:
+        print("run render")
         ckpt_path = (
             f"{logdir}/best.ckpt"
             if model_name != "mipnerf360"

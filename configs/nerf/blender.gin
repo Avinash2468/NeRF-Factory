@@ -7,10 +7,10 @@ LitData.batch_sampler = "single_image"
 
 ### NeRF Standard Specific Arguments
 
-NeRF.num_coarse_samples = 64
-NeRF.num_fine_samples = 128
+NeRF.num_coarse_samples = 2
+NeRF.num_fine_samples = 4
 
-LitData.batch_size = 4096
+LitData.batch_size = 32
 LitData.chunk = 8192
 LitData.use_pixel_centers = True
 LitData.epoch_size = 250000
